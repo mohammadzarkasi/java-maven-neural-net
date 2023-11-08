@@ -26,4 +26,26 @@ public class Util {
         }
         return sumSquare / (correctAnswers.size());
     }
+
+    public static double meanSquareLoss2(List<Integer> labels, List<Integer> predictionLabels, List<Double> predictionValues) {
+        double sumSquare = 0;
+        for(var i = 0; i < labels.size(); i++)
+        {
+            var label = labels.get(i);
+            var predictLabel = predictionLabels.get(i);
+            var predictVal = predictionValues.get(i);
+
+            if(label == predictLabel)
+            {
+                double error = 1 - predictVal;
+                sumSquare += error * error;
+            }
+            else
+            {
+                double error = 20 - predictVal;
+                sumSquare += error * error;
+            }
+        }
+        return sumSquare / labels.size();
+    }
 }
