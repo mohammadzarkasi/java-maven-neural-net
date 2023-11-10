@@ -37,15 +37,34 @@ public class Util {
 
             if(label == predictLabel)
             {
-//                double error = 1 - predictVal;
-//                sumSquare += error * error;
+                double error = 1 - predictVal;
+                sumSquare += error * error;
             }
             else
             {
-                double error = 2 - predictVal;
+                double error = predictVal;
                 sumSquare += error * error;
             }
         }
         return sumSquare / labels.size();
+    }
+
+    public static double meanSquareLoss3(List<Double> predictions, Integer predictedNeuronIndex, Integer expectedNeuronIndex)
+    {
+        var sumSquare = 0.0;
+        for(var i = 0; i < predictions.size(); i++)
+        {
+            var prediction = predictions.get(i);
+            if(expectedNeuronIndex == i)
+            {
+                var error = 1 - prediction;
+                sumSquare += error*error;
+            }
+            else
+            {
+                sumSquare += prediction;
+            }
+        }
+        return sumSquare / predictions.size();
     }
 }

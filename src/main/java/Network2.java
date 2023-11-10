@@ -30,10 +30,10 @@ public class Network2 {
 
     public List<Double> predict(List<Double> inputs)
     {
-        return predict2(inputs, 0);
+        return predict(inputs, 0);
     }
 
-    private List<Double> predict2(List<Double> inputs, int indexLayer)
+    private List<Double> predict(List<Double> inputs, int indexLayer)
     {
         List<Double> outputs = new ArrayList<>();
         var neuronsThisLayer = neurons.get(indexLayer);
@@ -45,6 +45,11 @@ public class Network2 {
                 var output = neuron.compute(Arrays.asList(inputs.get(i)));
                 outputs.add(output);
             }
+            else if(indexLayer == neurons.size()-1)
+            {
+                var output = neuron.compute(inputs, false);
+                outputs.add(output);
+            }
             else
             {
                 var output = neuron.compute(inputs);
@@ -53,9 +58,30 @@ public class Network2 {
         }
         if(indexLayer < neurons.size()-1)
         {
-            return predict2(outputs, indexLayer+1);
+            return predict(outputs, indexLayer+1);
         }
         return outputs;
+
+    }
+
+    public void backprop(List<Double> predictions, Integer expectedLabel)
+    {
+        var layerSize = neurons.size();
+        List<Double> losses = new ArrayList<>();
+        for(var i = layerSize-1; i>0; i--)
+        {
+            var neuronsInCurrentLayer = neurons.get(i);
+            var neuronsInLeftLayer = neurons.get(i-1);
+            if(i == layerSize)
+            {
+                for(var j = 0; j < neuronsInCurrentLayer.size(); j++)
+                {
+                    var n = neuronsInCurrentLayer.get(j);
+                    var inputs = neuronsInLeftLayer.stream().map(n2 -> n2.getLastComputeResult()).toList();
+                    n.backprop(inputs, predictions.get(j), expectedLabel.doubleValue());
+                }
+            }
+        }
 
     }
 
@@ -89,43 +115,51 @@ public class Network2 {
         double bestEpochLoss = Double.MAX_VALUE;
         for (int epoch = 0; epoch < epochs; epoch++)
         {
-            var neuron = pickRandomNeuron();
-            neuron.mutateNeuron(learningFactor);
+//            var neuron = pickRandomNeuron();
+//            neuron.mutateNeuron(learningFactor);
 
-            List<Integer> predictionLabels = new ArrayList<>();
-            List<Double> predictionValues = new ArrayList<>();
+//            List<Integer> predictionLabels = new ArrayList<>();
+//            List<Double> predictionValues = new ArrayList<>();
 
-//            System.out.print("preditions-answer: ");
             for(int i = 0; i < data.size(); i++)
             {
                 var input = data.get(i);
-                var prediction = predict(data.get(i));
+                var expectedLabel = labels.get(i);
+
+                var prediction = predict(input);
                 System.out.println("inputs     : " + Arrays.toString(input.stream().map(x -> x.doubleValue()).toArray()));
                 System.out.println("predictions: " + Arrays.toString(prediction.stream().map(x -> x.doubleValue()).toArray()));
-//                System.out.print(data0 + ","+data1+"-->"+prediction + "-" + answer.get(i) + ", ");
                 var prediction2 = getMaxValIndex(prediction);
-                predictionLabels.add(prediction2.left);
-                predictionValues.add(prediction2.right);
+//                predictionLabels.add(prediction2.left);
+//                predictionValues.add(prediction2.right);
                 System.out.println("predicted  : " + prediction2.left + ", answer: " + labels.get(i));
+
+                var loss = Util.meanSquareLoss3(prediction, prediction2.left, expectedLabel);
+
+                if(bestEpochLoss > loss)
+                {
+                    bestEpochLoss = loss;
+                }
+
+                backprop(prediction, expectedLabel);
             }
             System.out.println("=====");
-//            System.out.println("");
 
-            double epochLoss = Util.meanSquareLoss2(labels, predictionLabels, predictionValues);
+//            double epochLoss = Util.meanSquareLoss2(labels, predictionLabels, predictionValues);
 
-            if (epoch % 10 == 9) {
-                System.out.println(String.format("Epoch: %s | bestEpochLoss: %.15f | thisEpochLoss: %.15f", epoch, bestEpochLoss, epochLoss));
-            }
+//            if (epoch % 10 == 9) {
+//                System.out.println(String.format("Epoch: %s | bestEpochLoss: %.15f | thisEpochLoss: %.15f", epoch, bestEpochLoss, epochLoss));
+//            }
 
-            if(bestEpochLoss > epochLoss)
-            {
-                bestEpochLoss = epochLoss;
-                neuron.rememberMutation();
-            }
-            else
-            {
-                neuron.forgetMutation();
-            }
+//            if(bestEpochLoss > epochLoss)
+//            {
+//                bestEpochLoss = epochLoss;
+//                neuron.rememberMutation();
+//            }
+//            else
+//            {
+//                neuron.forgetMutation();
+//            }
         }
     }
 }

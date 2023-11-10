@@ -7,6 +7,8 @@ public class Neuron2 {
     private int numberOfInput = 1;
 
     private double oldBias = 0;
+    private double errorValue = 0;
+    private double lastComputeResult = 0;
     private List<Double> oldWeights = new ArrayList<>();
 
     public Neuron2(int numberOfInput)
@@ -28,18 +30,51 @@ public class Neuron2 {
         this.id = id;
     }
 
-    public double compute(List<Double> inputs)
+    public void setErrorValue(double predicted, double expected)
     {
-//        assert inputs.size() == weights.size();
+        var diff = predicted-expected;
+        errorValue= diff*diff;
+    }
+    public double getErrorValue()
+    {
+        return errorValue;
+    }
 
+    public double compute(List<Double> inputs, boolean useActivationFunction)
+    {
         double jumlah = bias;
         for(int i = 0; i < numberOfInput; i++)
         {
             jumlah += (weights.get(i) * inputs.get(i));
         }
         double ouput = Util.sigmoid(jumlah);
-
+        setLastComputeResult(ouput);
         return ouput;
+    }
+
+    private void setLastComputeResult(double v)
+    {
+        lastComputeResult = v;
+    }
+    public double getLastComputeResult()
+    {
+        return lastComputeResult;
+    }
+
+    public double compute(List<Double> inputs)
+    {
+        return compute(inputs, true);
+    }
+
+    //https://www.youtube.com/watch?v=-zI1bldB8to
+    public void backprop(List<Double> lastInputs, double prediction, double expected)
+    {
+        var delta_cost = 2 * (prediction - expected);
+        var bias2 = delta_cost;
+        for(var i = 0 ; i < weights.size(); i++)
+        {
+            var weight2 = delta_cost * lastInputs.get(i);
+        }
     }
 
     public void mutateNeuron(double learningFactor)
