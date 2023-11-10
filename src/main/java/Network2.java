@@ -98,13 +98,15 @@ public class Network2 {
 //            System.out.print("preditions-answer: ");
             for(int i = 0; i < data.size(); i++)
             {
-
+                var input = data.get(i);
                 var prediction = predict(data.get(i));
+                System.out.println("inputs     : " + Arrays.toString(input.stream().map(x -> x.doubleValue()).toArray()));
+                System.out.println("predictions: " + Arrays.toString(prediction.stream().map(x -> x.doubleValue()).toArray()));
 //                System.out.print(data0 + ","+data1+"-->"+prediction + "-" + answer.get(i) + ", ");
                 var prediction2 = getMaxValIndex(prediction);
                 predictionLabels.add(prediction2.left);
                 predictionValues.add(prediction2.right);
-                System.out.println("predicted: " + prediction2.left + ", answer: " + labels.get(i));
+                System.out.println("predicted  : " + prediction2.left + ", answer: " + labels.get(i));
             }
             System.out.println("=====");
 //            System.out.println("");
