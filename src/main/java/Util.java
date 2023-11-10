@@ -37,12 +37,12 @@ public class Util {
 
             if(label == predictLabel)
             {
-                double error = 1 - predictVal;
-                sumSquare += error * error;
+//                double error = 1 - predictVal;
+//                sumSquare += error * error;
             }
             else
             {
-                double error = 20 - predictVal;
+                double error = 2 - predictVal;
                 sumSquare += error * error;
             }
         }
