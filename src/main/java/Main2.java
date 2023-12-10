@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Main2 {
     public static void main(String[] args) {
@@ -8,7 +9,7 @@ public class Main2 {
 //        double predict = n2.compute(Arrays.asList(1.0,2.0,3.0));
 //        System.out.println("predict: " + predict);
 
-        var network2 = new Network2(Arrays.asList(3, 2));
+        var network2 = new NeuralNetwork2(Arrays.asList(3, 2));
 
         List<List<Integer>> data = new ArrayList<>();
         data.add(Arrays.asList(3, 1, 22));
@@ -30,18 +31,9 @@ public class Main2 {
 //            data2.add(data22);
 //        }
 
-        network2.trains(100, 1,
-                data
-                        .stream()
-                        .map(
-                                x -> x
-                                        .stream()
-                                        .map(
-                                                y -> y.doubleValue()
-                                        )
-                                        .toList()
-                        )
-                        .toList(), answers);
+        var data2 = data.stream().map(x->x.stream().map(y->y.doubleValue()).collect(Collectors.toList())).toList();
+        var softmaxAF = new SoftmaxActivationFunction();
+        network2.trains(2, 1, data2, answers, softmaxAF);
 
     }
 }
