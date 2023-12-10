@@ -33,7 +33,9 @@ public class Main2 {
 
         var data2 = data.stream().map(x->x.stream().map(y->y.doubleValue()).collect(Collectors.toList())).toList();
         var softmaxAF = new SoftmaxActivationFunction();
-        network2.trains(2, 1, data2, answers, softmaxAF);
+        network2.setActivationFunction(softmaxAF);
+        network2.setLearningRate(0.1);
+        network2.trains(2, data2, answers);
 
     }
 }
