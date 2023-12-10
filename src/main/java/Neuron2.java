@@ -2,10 +2,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Neuron2 {
-    private List<Double> weights = new ArrayList<>();
     private double bias;
+    private double newBias;
     private boolean historyEnabled;
     private final int numberOfInput;
+    private List<Double> weights;
 
     //    private double oldBias = 0;
 //    private double errorValue = 0;
@@ -22,6 +23,7 @@ public class Neuron2 {
         this.numberOfInput = numberOfInput;
         historyDeltaPredictions = new ArrayList<>();
         historyInputs = new ArrayList<>();
+        weights = new ArrayList<>();
         newWeights = new ArrayList<>();
 
         bias = Util.getRandomDouble(-1, 1);
@@ -146,6 +148,7 @@ public class Neuron2 {
     public void calculateDerivative(double learningRate) {
         var deltaPrediction = getMeanDeltaPredictions() * 2;
         newWeights.clear();
+        newBias = bias - (learningRate * deltaPrediction);
         for (var i = 0; i < numberOfInput; i++) {
 //            var listDeltaWeight = new ArrayList<Double>();
             var sumDeltaWeight = 0.0;
